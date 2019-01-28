@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
-#!/bin/bash
-
+# get directory path of *this* script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 alias deploy='$DIR/deploy.sh'
