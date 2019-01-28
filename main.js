@@ -1,4 +1,4 @@
-console.log("V6")
+console.log("V7")
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -214,10 +214,10 @@ function SendCode(Code) {
     if (Code == "MoveCharacter") {
         console.log("Moving Character")
         console.log(Character.position)
-        var target = new THREE.Vector3(Character.position.x, Character.position.y, Character.position.z + 20); // create on init
+        var target = new THREE.Vector3(Character.position.x, Character.position.y, Character.position.z + 100); // create on init
         animateVector3(Character.position, target, {
 
-            duration: 3000,
+            duration: 1500,
 
             easing: TWEEN.Easing.Quadratic.InOut,
 
@@ -229,6 +229,23 @@ function SendCode(Code) {
                 console.log("Completed");
             }
         });
+        TWEEN.Tween.repeat(10)
+        console.log("Done")
+        /*var target = new THREE.Vector3(Character.position.x, Character.position.y+20, Character.position.z); // create on init
+        animateVector3(Character.position, target, {
+
+            duration: 200,
+
+            easing: TWEEN.Easing.Quadratic.InOut,
+
+            update: function(d) {
+                console.log("Updating: " + d);
+            },
+
+            callback: function() {
+                console.log("Completed");
+            }
+        });*/
     }
 
 }
