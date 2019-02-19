@@ -28,6 +28,23 @@
 				opacity: 0.9;
 				border: none
 			}
+			#InstructionContainer{
+				width: 500px;
+				font-size: 24px;
+				color: black;
+				background-color: white;
+				text-align: center;
+				word-wrap: normal;
+				position: fixed;
+				top: 10;
+				left: 10;
+				opacity: 0.9;
+				border: none
+			}
+			#Next{
+				font-size: 24px;
+				top: 50px;
+			}
 			#SubmitCode{
 				width: 100%;
 				height: 10%;
@@ -48,9 +65,14 @@
 			SendCode(document.getElementById("CodeInput").value)
 		}
 		</script>
+		
+		<div id="InstructionContainer" style="">
+			<div id="Instruction"></div>
+			<button id="Next" onclick="onNextClicked()">Next</button>
+		</div>
 		<div id="CodeFrame" style="">
 			<textarea type="text" id="CodeInput">
-MoveCharacter(1)
+Character.Move(1)
 			</textarea>
 			<button id="SubmitCode" onclick="myFunction()">Run Code</button>	
 		</div>
