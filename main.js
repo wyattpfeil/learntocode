@@ -1,45 +1,105 @@
-console.log("V9");
+console.log("V10");
 /*Create Globals*/
-var globals = {}
+var globals = {};
 var Character;
 var Base;
-var currentInstruction = 0
+var currentInstruction = 0;
 var instructions = [
   {
-    "text": "Welcome to Learn to Code! This project was made by Wyatt Pfeil. Click next to begin!"
+    text:
+      "Welcome to Learn to Code! This project was made by Wyatt Pfeil. Click next to begin!"
   },
   {
-    "text": "The purpose of this is to introduce you to the basics of programming. Play the game and figure out the secret message by coding!"
+    text:
+      "The purpose of this is to introduce you to the basics of programming. Play the game and figure out the secret message by coding!"
   },
   {
-    "text": "You are a character in a world. Your goal is to complete all of the challenges and come back to me with the secret message. I have been trying to figure out the secret code for years and you seem like the perfect person to assist me in completing the quest. Press next to accept the challenge.",
-    "onDisplay": function(){
-      toggleCanvasVisibility(true)
+    text:
+      "You are a character in a world. Your goal is to complete all of the challenges and come back to me with the secret message. I have been trying to figure out the secret code for years and you seem like the perfect person to assist me in completing the quest. Press next to accept the challenge.",
+    onDisplay: function() {
+      toggleCanvasVisibility(true);
     }
   },
   {
-    "text": "Your first challenge is to move your virtual character. The code to move your character will appear in the box when you press next."
+    text:
+      "Your first challenge is to move your virtual character. The code to move your character will appear in the box when you press next."
   },
   {
-    "text": "There are a few parts to this code. The first part is the object. In this case, the object is “Character”. "
+    text:
+      'There are a few parts to this code. The first part is the object. In this case, the object is "Character". ',
+    onDisplay: function() {
+      toggleCodeFrameVisibility(true);
+      toggleRunButtonVisibility(false);
+    }
   },
   {
-    "text": "The second part is the method. This is the action that the object does. In this case, the method is “move”"
+    text:
+      "The second part is the method. This is the action that the object does. In this case, the method is “move”"
   },
   {
-    "text": "Now I bet you are probably wondering what that period is doing in between “Character” and “move”. That period separates the object from the method. This is similar to putting a space in between words."
+    text:
+      "Now I bet you are probably wondering what that period is doing in between “Character” and “move”. That period separates the object from the method. This is similar to putting a space in between words."
   },
   {
-    "text": "Those parenthesis are what contains the arguments. In this case, the argument, 1, means how many steps the character should move."
+    text:
+      "Those parenthesis are what contains the arguments. In this case, the argument, 1, means how many steps the character should move."
   },
   {
-    "text": "Press run code and see what happens!"
+    text: "Press run code and see what happens!",
+    onDisplay: function() {
+      toggleNextButtonVisibility(false);
+      toggleRunButtonVisibility(true);
+    },
+    VerifyCode: function(Code) {
+      const correct = "Character.Move(1)";
+      if (Code == correct) {
+        MoveCharacter(Code);
+        onNextClicked();
+        displayNextChallengeMessageLetter();
+        toggleNextButtonVisibility(true);
+        toggleRunButtonVisibility(false);
+      } else {
+        setInstructionText("Hmm.. That doesn't seem right. Try again.");
+      }
+    }
+  },
+  {
+    text:
+      "Look at that! You just ran your first program. You just got your first letter that will be used to figure out the secret message. Great job!"
+  },
+  {
+    text:
+      "Now, you are going to be doing a little bit of coding on your own. The next challenge is to move forward two steps."
+  },
+  {
+    text:
+      "I have given you the object and the method, you will have to fill in the arguments. Remember, the character needs to move forward *2* times.",
+    onDisplay: function() {
+      toggleNextButtonVisibility(false);
+      toggleRunButtonVisibility(true);
+    },
+    VerifyCode: function(Code) {
+      const correct = "Character.Move(2)";
+      if (Code == correct) {
+        MoveCharacter(Code);
+        onNextClicked();
+        displayNextChallengeMessageLetter();
+        toggleNextButtonVisibility(true);
+        toggleRunButtonVisibility(false);
+      } else {
+        setInstructionText("Hmm.. That doesn't seem right. Try again.");
+      }
+    }
+  },
+  {
+    text:
+      "Wow! You’re getting really good at this. You just earned your second letter."
   }
-]
+];
 /*Create Globals*/
 function sleep(ms = 0) {
-    return new Promise(r => setTimeout(r, ms));
-  }
+  return new Promise(r => setTimeout(r, ms));
+}
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(
@@ -68,47 +128,73 @@ function layoutCodeFrame() {
   CodeFrameElement.style.width = window.innerWidth * 0.15;
   CodeFrameElement.style.height = window.innerHeight * 0.35;
   renderer.setSize(window.innerWidth, window.innerHeight);
-  toggleCodeFrameVisibility(false)
-  toggleCanvasVisibility(false)
+  toggleCodeFrameVisibility(false);
+  toggleCanvasVisibility(false);
 }
 
-function toggleCodeFrameVisibility(visible){
+function toggleCodeFrameVisibility(visible) {
   var CodeFrameElement = document.getElementById("CodeFrame");
   CodeFrameElement.hidden = !visible;
 }
-function toggleCanvasVisibility(visible){
+function toggleNextButtonVisibility(visible) {
+  var NextElement = document.getElementById("Next");
+  NextElement.hidden = !visible;
+}
+function toggleRunButtonVisibility(visible) {
+  var RunElement = document.getElementById("SubmitCode");
+  RunElement.hidden = !visible;
+}
+function toggleCanvasVisibility(visible) {
   var canvasElement = document.getElementsByTagName("canvas")[0];
   canvasElement.hidden = !visible;
 }
-
 
 window.addEventListener("resize", layoutCodeFrame);
 window.addEventListener("load", layoutCodeFrame);
 window.addEventListener("load", initInstructions);
 
-function setInstruction(Index){
-  var instructionElement = document.getElementById("Instruction")
-  instructionElement.innerText = instructions[Index].text
-
+function setInstructionText(Text) {
+  var instructionElement = document.getElementById("Instruction");
+  instructionElement.innerText = Text;
 }
-function initInstructions(){
-  setInstruction(currentInstruction)
+
+function getChallengeMessageText() {
+  var ChallengeMessageElement = document.getElementById("ChallengeMessage");
+  return ChallengeMessageElement.innerText;
+}
+
+function setChallengeMessageText(Text) {
+  var ChallengeMessageElement = document.getElementById("ChallengeMessage");
+  ChallengeMessageElement.innerText = Text;
+}
+
+var currentLetter = 0;
+const endMessage = "CODE";
+var splitEndMessage = endMessage.split("");
+function displayNextChallengeMessageLetter() {
+  setChallengeMessageText(
+    getChallengeMessageText() + splitEndMessage[currentLetter]
+  );
+  currentLetter = currentLetter + 1;
+}
+function setInstruction(Index) {
+  setInstructionText(instructions[Index].text);
+}
+function initInstructions() {
+  setInstruction(currentInstruction);
 }
 
 function onNextClicked() {
-  console.log("Next Clicked!")
-  if(currentInstruction < instructions.length-1){
-    currentInstruction = currentInstruction + 1
-    setInstruction(currentInstruction)
-    var onDisplay = instructions[currentInstruction].onDisplay
-    if(onDisplay){
-      onDisplay()
+  console.log("Next Clicked!");
+  if (currentInstruction < instructions.length - 1) {
+    currentInstruction = currentInstruction + 1;
+    setInstruction(currentInstruction);
+    var onDisplay = instructions[currentInstruction].onDisplay;
+    if (onDisplay) {
+      onDisplay();
     }
   }
 }
-
-
-
 
 //Load Ground/////////////////////////////////////////////
 var mtlLoader = new THREE.MTLLoader();
@@ -211,47 +297,45 @@ window.addEventListener("mousemove", onMouseMove, false);
 window.requestAnimationFrame(render);
 
 function MoveObject(mesh, toPosition, duration) {
-    return new Promise((resolve, reject) => {
-        var tween = new TWEEN.Tween(mesh.position)
-        .to(
-          {
-            x: toPosition.x,
-            y: toPosition.y,
-            z: toPosition.z
-          },
-          duration
-        )
-        .easing(TWEEN.Easing.Linear.None)
-        .onUpdate(function(d) {})
-        .onComplete(function() {
-            resolve()
-        });
-      
-        tween.start();    
-    })
+  return new Promise((resolve, reject) => {
+    var tween = new TWEEN.Tween(mesh.position)
+      .to(
+        {
+          x: toPosition.x,
+          y: toPosition.y,
+          z: toPosition.z
+        },
+        duration
+      )
+      .easing(TWEEN.Easing.Linear.None)
+      .onUpdate(function(d) {})
+      .onComplete(function() {
+        resolve();
+      });
+
+    tween.start();
+  });
 }
 
-
-
 function RotateObject(mesh, toRotation, duration) {
-    return new Promise((resolve, reject) => {
-        var tween = new TWEEN.Tween(mesh.rotation)
-        .to(
-          {
-            x: toRotation.x,
-            y: toRotation.y,
-            z: toRotation.z
-          },
-          duration
-        )
-        .easing(TWEEN.Easing.Linear.None)
-        .onUpdate(function(d) {})
-        .onComplete(function() {
-            resolve()
-        });
-      
-        tween.start();    
-    })
+  return new Promise((resolve, reject) => {
+    var tween = new TWEEN.Tween(mesh.rotation)
+      .to(
+        {
+          x: toRotation.x,
+          y: toRotation.y,
+          z: toRotation.z
+        },
+        duration
+      )
+      .easing(TWEEN.Easing.Linear.None)
+      .onUpdate(function(d) {})
+      .onComplete(function() {
+        resolve();
+      });
+
+    tween.start();
+  });
 }
 function animateVector3(vectorToAnimate, target, options) {
   options = options || {};
@@ -286,51 +370,102 @@ function animateVector3(vectorToAnimate, target, options) {
   console.log("After Start");
   return tweenVector3;
 }
-async function WalkCharacter(Character){
-  var walkUpPosition = new THREE.Vector3(Character.position.x, Character.position.y + 10, Character.position.z + 20); 
-  var rotateRightPosition = new THREE.Vector3(Character.rotation.x, Character.rotation.y, 0.1);
-  await Promise.all([MoveObject(Character, walkUpPosition, 150), RotateObject(Character, rotateRightPosition, 75)])
+async function WalkCharacter(Character) {
+  var walkUpPosition = new THREE.Vector3(
+    Character.position.x,
+    Character.position.y + 10,
+    Character.position.z + 20
+  );
+  var rotateRightPosition = new THREE.Vector3(
+    Character.rotation.x,
+    Character.rotation.y,
+    0.1
+  );
+  await Promise.all([
+    MoveObject(Character, walkUpPosition, 150),
+    RotateObject(Character, rotateRightPosition, 75)
+  ]);
 
-  var walkDownPosition = new THREE.Vector3(Character.position.x, Character.position.y - 10, Character.position.z + 20);
-  var rotateCenterPosition = new THREE.Vector3(Character.rotation.x, Character.rotation.y, 0);
-  await Promise.all([MoveObject(Character, walkDownPosition, 75), RotateObject(Character, rotateCenterPosition, 75)])
+  var walkDownPosition = new THREE.Vector3(
+    Character.position.x,
+    Character.position.y - 10,
+    Character.position.z + 20
+  );
+  var rotateCenterPosition = new THREE.Vector3(
+    Character.rotation.x,
+    Character.rotation.y,
+    0
+  );
+  await Promise.all([
+    MoveObject(Character, walkDownPosition, 75),
+    RotateObject(Character, rotateCenterPosition, 75)
+  ]);
 
-  walkUpPosition = new THREE.Vector3(Character.position.x, Character.position.y + 10, Character.position.z + 20); 
-  var rotateLeftPosition = new THREE.Vector3(Character.rotation.x, Character.rotation.y, -0.1);
-  await Promise.all([MoveObject(Character, walkUpPosition, 150), RotateObject(Character, rotateLeftPosition, 75)])
+  walkUpPosition = new THREE.Vector3(
+    Character.position.x,
+    Character.position.y + 10,
+    Character.position.z + 20
+  );
+  var rotateLeftPosition = new THREE.Vector3(
+    Character.rotation.x,
+    Character.rotation.y,
+    -0.1
+  );
+  await Promise.all([
+    MoveObject(Character, walkUpPosition, 150),
+    RotateObject(Character, rotateLeftPosition, 75)
+  ]);
 
-  walkDownPosition = new THREE.Vector3(Character.position.x, Character.position.y - 10, Character.position.z + 20);
-  rotateCenterPosition = new THREE.Vector3(Character.rotation.x, Character.rotation.y, 0);
-  await Promise.all([MoveObject(Character, walkDownPosition, 75), RotateObject(Character, rotateCenterPosition, 75)])
+  walkDownPosition = new THREE.Vector3(
+    Character.position.x,
+    Character.position.y - 10,
+    Character.position.z + 20
+  );
+  rotateCenterPosition = new THREE.Vector3(
+    Character.rotation.x,
+    Character.rotation.y,
+    0
+  );
+  await Promise.all([
+    MoveObject(Character, walkDownPosition, 75),
+    RotateObject(Character, rotateCenterPosition, 75)
+  ]);
 }
 
-async function TurnCharacter(Character){
-  var RotateCharacter = new THREE.Vector3(Character.rotation.x, Character.rotation.y + 0.5, Character.rotation.z);
-  await RotateObject(Character, RotateCharacter, 500)
+async function TurnCharacter(Character) {
+  var RotateCharacter = new THREE.Vector3(
+    Character.rotation.x,
+    Character.rotation.y + 0.5,
+    Character.rotation.z
+  );
+  await RotateObject(Character, RotateCharacter, 500);
 }
-async function MoveCharacter(Code){
-    console.log(globals.Character)
-    var leftParend = Code.indexOf("(");
-    var rightParend = Code.indexOf(")");
-    var StringObj = Code.split('.')[0];
-    var Obj = globals[StringObj];
-    console.log(`StringObj=${StringObj}`)
-    console.log(`Obj=${Obj}`)
-    var Times = Code.substr(leftParend + 1, rightParend - leftParend - 1);
-    for (i = 0; i < Times; i++) {
-      await WalkCharacter(Obj)
-    }
-
+async function MoveCharacter(Code) {
+  console.log(globals.Character);
+  var leftParend = Code.indexOf("(");
+  var rightParend = Code.indexOf(")");
+  var StringObj = Code.split(".")[0];
+  var Obj = globals[StringObj];
+  console.log(`StringObj=${StringObj}`);
+  console.log(`Obj=${Obj}`);
+  var Times = Code.substr(leftParend + 1, rightParend - leftParend - 1);
+  for (i = 0; i < Times; i++) {
+    await WalkCharacter(Obj);
+  }
 }
 
 async function SendCode(Code) {
-  if (Code.includes("Move")) {
+  var VerifyCode = instructions[currentInstruction].VerifyCode;
+  if (VerifyCode) {
+    VerifyCode(Code);
+  }
+  /*if (Code.includes("Move")) {
     MoveCharacter(Code)
     console.log("Done");
   }
   if (Code.includes("test")) {
       await TurnCharacter(Character)
-  }
+  }*/
 }
 
 ////////////////////////////////////////////////////////////////////////////
