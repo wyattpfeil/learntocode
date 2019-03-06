@@ -26,7 +26,7 @@ var instructions = [
   },
   {
     text:
-      'There are a few parts to this code. The first part is the object. In this case, the object is "Character". ',
+      'There are a few parts to this code. The first part is the object. In this case, the object is "Character".',
     onDisplay: function() {
       toggleCodeFrameVisibility(true);
       toggleRunButtonVisibility(false);
@@ -34,11 +34,11 @@ var instructions = [
   },
   {
     text:
-      "The second part is the method. This is the action that the object does. In this case, the method is “move”"
+      'The second part is the method. This is the action that the object does. In this case, the method is "move".'
   },
   {
     text:
-      "Now I bet you are probably wondering what that period is doing in between “Character” and “move”. That period separates the object from the method. This is similar to putting a space in between words."
+      'Now I bet you are probably wondering what that period is doing in between "Character" and "move". That period separates the object from the method. This is similar to putting a space in between words.'
   },
   {
     text:
@@ -93,7 +93,73 @@ var instructions = [
   },
   {
     text:
-      "Wow! You’re getting really good at this. You just earned your second letter."
+      "Wow! You're getting really good at this. You just earned your second letter."
+  },
+  {
+    text:
+      "Now are going to have to do something a little bit more challenging. You need to make the character jump."
+  },
+  {
+    text:
+      "As you can see, I have given you the method and the argument. You need to fill in the object. Remember, it is the character we are moving.",
+    onDisplay: function() {
+      toggleNextButtonVisibility(false);
+      toggleRunButtonVisibility(true);
+      setCodeText(".Jump(1)");
+    },
+    VerifyCode: function(Code) {
+      const correct = "Character.Jump(1)";
+      if (Code == correct) {
+        JumpCharacter(Code);
+        onNextClicked();
+        displayNextChallengeMessageLetter();
+        toggleNextButtonVisibility(true);
+        toggleRunButtonVisibility(false);
+      } else {
+        setInstructionText("Hmm.. That doesn't seem right. Try again.");
+      }
+    }
+  },
+  {
+    text:
+      "You are an amazing programmer! Now, for your final challenge. You only have one letter left to earn. "
+  },
+  {
+    text:
+      "For your final challenge, you are going to have to make the character spin around. I am not going to be giving you any code but I will be giving you some hints. Click next to view them."
+  },
+  {
+    text:
+      "The object is character, the method is spin, and the argument is 1. Good luck!",
+    onDisplay: function() {
+      toggleNextButtonVisibility(false);
+      toggleRunButtonVisibility(true);
+      setCodeText("");
+    },
+    VerifyCode: function(Code) {
+      const correct = "Character.Spin(1)";
+      if (Code == correct) {
+        SpinCharacter(Code);
+        onNextClicked();
+        displayNextChallengeMessageLetter();
+        toggleNextButtonVisibility(true);
+        toggleRunButtonVisibility(false);
+      } else {
+        setInstructionText("Hmm.. That doesn't seem right. Try again.");
+      }
+    }
+  },
+  {
+    text:
+      "Wow! You got all of the letters! You can do exactly what it says. You can CODE!"
+  },
+  {
+    onDisplay: function() {
+      toggleNextButtonVisibility(false);
+      toggleCodeFrameVisibility(false);
+      setCodeText("");
+    },
+    text: "Thank you for learning to code."
   }
 ];
 /*Create Globals*/
@@ -156,6 +222,11 @@ window.addEventListener("load", initInstructions);
 function setInstructionText(Text) {
   var instructionElement = document.getElementById("Instruction");
   instructionElement.innerText = Text;
+}
+
+function setCodeText(Text) {
+  var codeInputElement = document.getElementById("CodeInput");
+  codeInputElement.value = Text;
 }
 
 function getChallengeMessageText() {
@@ -337,6 +408,7 @@ function RotateObject(mesh, toRotation, duration) {
     tween.start();
   });
 }
+
 function animateVector3(vectorToAnimate, target, options) {
   options = options || {};
   // get targets from options or set to defaults
@@ -435,10 +507,24 @@ async function WalkCharacter(Character) {
 async function TurnCharacter(Character) {
   var RotateCharacter = new THREE.Vector3(
     Character.rotation.x,
-    Character.rotation.y + 0.5,
+    Character.rotation.y + 1,
     Character.rotation.z
   );
   await RotateObject(Character, RotateCharacter, 500);
+}
+async function HopCharacter(Character) {
+  var JumpCharacterUp = new THREE.Vector3(
+    Character.position.x,
+    Character.position.y + 10,
+    Character.position.z
+  );
+  var JumpCharacterDown = new THREE.Vector3(
+    Character.position.x,
+    Character.position.y - 10,
+    Character.position.z
+  );
+  await MoveObject(Character, JumpCharacterUp, 250);
+  await MoveObject(Character, JumpCharacterDown, 250);
 }
 async function MoveCharacter(Code) {
   console.log(globals.Character);
@@ -454,10 +540,38 @@ async function MoveCharacter(Code) {
   }
 }
 
+async function JumpCharacter(Code) {
+  console.log(globals.Character);
+  var leftParend = Code.indexOf("(");
+  var rightParend = Code.indexOf(")");
+  var StringObj = Code.split(".")[0];
+  var Obj = globals[StringObj];
+  console.log(`StringObj=${StringObj}`);
+  console.log(`Obj=${Obj}`);
+  var Times = Code.substr(leftParend + 1, rightParend - leftParend - 1);
+  for (i = 0; i < Times; i++) {
+    await HopCharacter(Obj);
+  }
+}
+
+async function SpinCharacter(Code) {
+  console.log(globals.Character);
+  var leftParend = Code.indexOf("(");
+  var rightParend = Code.indexOf(")");
+  var StringObj = Code.split(".")[0];
+  var Obj = globals[StringObj];
+  console.log(`StringObj=${StringObj}`);
+  console.log(`Obj=${Obj}`);
+  var Times = Code.substr(leftParend + 1, rightParend - leftParend - 1);
+  for (i = 0; i < Times; i++) {
+    await TurnCharacter(Obj);
+  }
+}
+
 async function SendCode(Code) {
   var VerifyCode = instructions[currentInstruction].VerifyCode;
   if (VerifyCode) {
-    VerifyCode(Code);
+    VerifyCode(Code.trim());
   }
   /*if (Code.includes("Move")) {
     MoveCharacter(Code)
