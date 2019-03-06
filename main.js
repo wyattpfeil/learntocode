@@ -102,7 +102,7 @@ var instructions = [
   },
   {
     text:
-      "As you can see, I have given you the method and the argument. You need to fill in the object. Remember, it is the character we are moving.",
+      "As you can see, I have given you the method and the argument. You need to fill in the object. Remember, it is the *Character* we are moving.",
     onDisplay: function() {
       toggleNextButtonVisibility(false);
       toggleRunButtonVisibility(true);
@@ -131,7 +131,7 @@ var instructions = [
   },
   {
     text:
-      "The object is character, the method is spin, and the argument is 1. Good luck!",
+      "The object is Character, the method is Spin, and the argument is 1. (Remember Everything in Programming is Case Sensative!) Good luck!",
     onDisplay: function() {
       toggleNextButtonVisibility(false);
       toggleRunButtonVisibility(true);
@@ -458,7 +458,7 @@ async function WalkCharacter(Character) {
 async function TurnCharacter(Character) {
   var RotateCharacter = new THREE.Vector3(
     Character.rotation.x,
-    Character.rotation.y + 1,
+    Character.rotation.y + 10,
     Character.rotation.z
   );
   await RotateObject(Character, RotateCharacter, 500);
