@@ -1,9 +1,10 @@
-console.log("V10");
 /*Create Globals*/
 var globals = {};
 var Character;
 var Base;
 var currentInstruction = 0;
+
+/*Create Instructions*/
 var instructions = [
   {
     text:
@@ -162,12 +163,11 @@ var instructions = [
     text: "Thank you for learning to code."
   }
 ];
-/*Create Globals*/
-function sleep(ms = 0) {
-  return new Promise(r => setTimeout(r, ms));
-}
 
+/*Setup Scene*/
 var scene = new THREE.Scene();
+
+/*Setup Camera*/
 var camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -175,19 +175,14 @@ var camera = new THREE.PerspectiveCamera(
   5000
 );
 
+/*Setup Renderer*/
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x6100ff, 1);
 scene.background = new THREE.Color(0x00d8ff);
-
 document.body.appendChild(renderer.domElement);
 
-var geometry = new THREE.BoxGeometry(1, 1, 1);
-var material = new THREE.MeshBasicMaterial({
-  color: 0x4985e5
-});
-var cube = new THREE.Mesh(geometry, material);
-
+/*Define Function to Layout the Screen for the Start of the Application*/
 function layoutCodeFrame() {
   var CodeFrameElement = document.getElementById("CodeFrame");
   console.log(CodeFrameElement);
@@ -198,6 +193,7 @@ function layoutCodeFrame() {
   toggleCanvasVisibility(false);
 }
 
+/*Define Functions to Toggle to Visibility of HTML Elements*/
 function toggleCodeFrameVisibility(visible) {
   var CodeFrameElement = document.getElementById("CodeFrame");
   CodeFrameElement.hidden = !visible;
@@ -215,10 +211,12 @@ function toggleCanvasVisibility(visible) {
   canvasElement.hidden = !visible;
 }
 
+/*Add Listeners (Used for Scaling on different Devices)*/
 window.addEventListener("resize", layoutCodeFrame);
 window.addEventListener("load", layoutCodeFrame);
 window.addEventListener("load", initInstructions);
 
+/*Define Set and Get HTML Elements' Text Functions*/
 function setInstructionText(Text) {
   var instructionElement = document.getElementById("Instruction");
   instructionElement.innerText = Text;
@@ -239,6 +237,7 @@ function setChallengeMessageText(Text) {
   ChallengeMessageElement.innerText = Text;
 }
 
+/*Create Challenge Message Handler*/
 var currentLetter = 0;
 const endMessage = "CODE";
 var splitEndMessage = endMessage.split("");
@@ -248,13 +247,18 @@ function displayNextChallengeMessageLetter() {
   );
   currentLetter = currentLetter + 1;
 }
+
+/*Define the function to Set the Instruction by the Index of the Instructions Table*/
 function setInstruction(Index) {
   setInstructionText(instructions[Index].text);
 }
+
+/*Create Function used to Initialize the Instructions*/
 function initInstructions() {
   setInstruction(currentInstruction);
 }
 
+/*Define function that Sets the Instruction to the Next One*/
 function onNextClicked() {
   console.log("Next Clicked!");
   if (currentInstruction < instructions.length - 1) {
@@ -267,7 +271,7 @@ function onNextClicked() {
   }
 }
 
-//Load Ground/////////////////////////////////////////////
+/*Import and Render Baseplate to Scene*/
 var mtlLoader = new THREE.MTLLoader();
 mtlLoader.setResourcePath("/learntocode/assets/");
 mtlLoader.setPath("/learntocode/assets/");
@@ -286,6 +290,7 @@ mtlLoader.load("BaseForProjobj.mtl", function(materials) {
   });
 });
 
+/*Import and Render Character to Scene*/
 var mtlLoader = new THREE.MTLLoader();
 mtlLoader.setResourcePath("/learntocode/assets/");
 mtlLoader.setPath("/learntocode/assets/");
@@ -303,8 +308,8 @@ mtlLoader.load("Character.mtl", function(materials) {
     globals.Character = character;
   });
 });
-////////////////////////////////////////////////////////////
 
+/*Setup Orbit Controls*/
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
@@ -312,61 +317,38 @@ controls.enableZoom = true;
 
 controls.update();
 
-//Add Lighting\\ ///////////////////////////////////////////
+/*Setup Lighting for Scene*/
 var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
 scene.add(light);
-/////////////////////////////////////////////////////////////
 
+/*Define Animate function for Render Loop */
 camera.position.z = 200;
 var animate = function() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 };
 
-//Add Music\\ //////////////////////////////////////////////////
-var listener = new THREE.AudioListener();
-camera.add(listener);
-// create a global audio source
-/*var sound = new THREE.Audio(listener);
-
-// load a sound and set it as the Audio object's buffer
-var audioLoader = new THREE.AudioLoader();
-audioLoader.load('/learntocode/assets/BackroundMusic.mp3', function(buffer) {
-    sound.setBuffer(buffer);
-    sound.setLoop(true);
-    sound.setVolume(0.5);
-    sound.play();
-});*/
-//////////////////////////////////////////////////////////////////
-
-//Mouse Click\\ /////////////////////////////////////////////////////////////
-
+/*Use Mouse for Orbit Controls*/
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
-
 function onMouseMove(event) {
-  // calculate mouse position in normalized device coordinates
-  // (-1 to +1) for both components
-
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
+/*Define Render Function(Includes Tween Updating for Smooth Animations)*/
 function render() {
   TWEEN.update();
-
-  //console.log(scene.children)
-  // update the picking ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
   renderer.render(scene, camera);
-
   window.requestAnimationFrame(render);
 }
 
+/*Add Mouse Move Event to be Used and Start Render Loop*/
 window.addEventListener("mousemove", onMouseMove, false);
-
 window.requestAnimationFrame(render);
 
+/*Create Function to Move Global Objects*/
 function MoveObject(mesh, toPosition, duration) {
   return new Promise((resolve, reject) => {
     var tween = new TWEEN.Tween(mesh.position)
@@ -383,11 +365,11 @@ function MoveObject(mesh, toPosition, duration) {
       .onComplete(function() {
         resolve();
       });
-
     tween.start();
   });
 }
 
+/*Create Function to Rotate Global Objects*/
 function RotateObject(mesh, toRotation, duration) {
   return new Promise((resolve, reject) => {
     var tween = new TWEEN.Tween(mesh.rotation)
@@ -409,39 +391,7 @@ function RotateObject(mesh, toRotation, duration) {
   });
 }
 
-function animateVector3(vectorToAnimate, target, options) {
-  options = options || {};
-  // get targets from options or set to defaults
-  var to = target || THREE.Vector3(),
-    easing = options.easing || TWEEN.Easing.Quadratic.In,
-    duration = options.duration || 2000;
-  // create the tween
-  console.log("174");
-  var tweenVector3 = new TWEEN.Tween(vectorToAnimate)
-    .to(
-      {
-        x: to.x,
-        y: to.y,
-        z: to.z
-      },
-      duration
-    )
-    .easing(easing)
-    .onUpdate(function(d) {
-      //   console.log("Updated");
-      //   if (options.update) {
-      //     options.update(d);
-      //   }
-    })
-    .onComplete(function() {
-      console.log("Completed");
-      if (options.callback) options.callback();
-    });
-  console.log("Before Start");
-  tweenVector3.start();
-  console.log("After Start");
-  return tweenVector3;
-}
+/*Create Function to Make Character Walk*/
 async function WalkCharacter(Character) {
   var walkUpPosition = new THREE.Vector3(
     Character.position.x,
@@ -504,6 +454,7 @@ async function WalkCharacter(Character) {
   ]);
 }
 
+/*Create Function to make Character Turn*/
 async function TurnCharacter(Character) {
   var RotateCharacter = new THREE.Vector3(
     Character.rotation.x,
@@ -512,6 +463,8 @@ async function TurnCharacter(Character) {
   );
   await RotateObject(Character, RotateCharacter, 500);
 }
+
+/*Create Function to make Character Hop*/
 async function HopCharacter(Character) {
   var JumpCharacterUp = new THREE.Vector3(
     Character.position.x,
@@ -526,6 +479,8 @@ async function HopCharacter(Character) {
   await MoveObject(Character, JumpCharacterUp, 250);
   await MoveObject(Character, JumpCharacterDown, 250);
 }
+
+/*Create Function to Parse Code and Move Character*/
 async function MoveCharacter(Code) {
   console.log(globals.Character);
   var leftParend = Code.indexOf("(");
@@ -540,6 +495,7 @@ async function MoveCharacter(Code) {
   }
 }
 
+/*Create Function to Parse Code and Jump Character*/
 async function JumpCharacter(Code) {
   console.log(globals.Character);
   var leftParend = Code.indexOf("(");
@@ -554,6 +510,7 @@ async function JumpCharacter(Code) {
   }
 }
 
+/*Create Function to Parse Code and Spin Character*/
 async function SpinCharacter(Code) {
   console.log(globals.Character);
   var leftParend = Code.indexOf("(");
@@ -568,20 +525,13 @@ async function SpinCharacter(Code) {
   }
 }
 
+/*Check that the Code is Correct when Sent and Trim off Extra Space from Passed in String*/
 async function SendCode(Code) {
   var VerifyCode = instructions[currentInstruction].VerifyCode;
   if (VerifyCode) {
     VerifyCode(Code.trim());
   }
-  /*if (Code.includes("Move")) {
-    MoveCharacter(Code)
-    console.log("Done");
-  }
-  if (Code.includes("test")) {
-      await TurnCharacter(Character)
-  }*/
 }
 
-////////////////////////////////////////////////////////////////////////////
-
+/*Animate Scene*/
 animate();
