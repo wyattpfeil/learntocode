@@ -322,7 +322,7 @@ var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
 scene.add(light);
 
 /*Define Animate function for Render Loop */
-camera.position.z = 200;
+camera.position.z = 400;
 var animate = function() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
